@@ -1,0 +1,71 @@
+Import('env')
+
+testEnv = env.Clone()
+
+def runProg(args, ENV):
+	import subprocess, os
+	argstr = ""
+	for arg in args:
+		argstr = argstr + str(arg) + " "
+	p = subprocess.Popen(argstr.split(" "), shell=False,
+                         close_fds=True, env=ENV)
+	ret = os.waitpid(p.pid, 0)
+	return ret 
+ 
+def runUnitTests(target, source, env):
+	global testEnv
+	runEnv = {}
+	runEnv['LD_LIBRARY_PATH'] = testEnv['MY_BUILD_DIR'] + ':/afs/cs.wisc.edu/u/h/v/hvolos/intel/Compiler/11.0.606/lib/ia32'
+	print "Running Tests ..."
+	failed_tests = 0
+	total_tests = 0
+	for test in source:
+		total_tests = total_tests + 1
+		ret = runProg([test], runEnv)
+		if ret[1] >> 8 == 1:
+			failed_tests = failed_tests + 1
+	print "\nSUMMARY"		
+	print "    Total tests : " + str(total_tests) 
+	print "    Failed tests: " + str(failed_tests) 
+
+testEnv['CPPPATH'] = ['#src', '#src/inc']
+testEnv['LIBS'] = 'txc'
+testEnv['CFLAGS'] = '-g -Qtm_enabled'
+testEnv['LINKFLAGS'] = '-Qtm_enabled'
+testEnv['LIBPATH'] = testEnv['MY_BUILD_DIR']
+
+if ARGUMENTS.has_key('select_test'):
+	TESTS = Split(ARGUMENTS['select_test'])
+else:	
+	TESTS = Split("""
+					test_commit_action
+					test_commit_undo_action
+					test_hash
+					test_sentinel
+					test_sentinel_multithread
+					test_txmgr
+					test_undo_action
+					test_x_close
+					test_x_create_case1
+					test_x_create_case2
+					test_x_create_write_multithread
+					test_x_open_write_multithread
+					test_x_open_write_read_lseek_multithread
+					test_x_pipe
+					test_x_read
+					test_x_read_lseek
+					test_x_rename
+					test_x_unlink
+					test_x_write
+					test_x_write_lseek""")
+
+unit_tests_runner = Builder(action = runUnitTests)
+testEnv.Append(BUILDERS = {'RunUnitTests':unit_tests_runner})
+
+if testEnv['stats'] == 1:
+	testEnv.Append(CCFLAGS = ' -D_TXC_STATS_BUILD')
+
+for c in TESTS:
+	testEnv.Program(c, c+'.c')
+
+testEnv.RunUnitTests('runtests', TESTS)

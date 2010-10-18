@@ -1,0 +1,71 @@
+Import('env')
+
+buildEnv = env.Clone()
+
+buildEnv.Append(CCFLAGS = 	' -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith')
+
+if buildEnv['mode'] == 'debug':
+	buildEnv.Append(CCFLAGS = ' -g -D_TXC_DEBUG_BUILD')
+elif buildEnv['mode'] == 'release':
+	buildEnv.Append(CCFLAGS = ' -O2')
+
+if buildEnv['stats'] == 1:
+	buildEnv.Append(CCFLAGS = ' -D_TXC_STATS_BUILD')
+
+
+buildEnv['CPPPATH'] = '#src'
+
+TXC_SRC = Split("""
+					core/buffer.c
+					core/config.c
+					core/fm.c
+					core/interface.c
+					core/koa.c
+					core/sentinel.c
+					core/stats.c
+					core/tx.c
+					misc/debug.c
+					misc/hash_table.c
+					misc/pool.c
+					xcalls/condvar/futex.c
+					xcalls/x_create.c
+					xcalls/x_close.c
+					xcalls/x_dup.c
+					xcalls/x_fdatasync.c
+					xcalls/x_fsync.c
+					xcalls/x_lseek.c
+					xcalls/x_open.c
+					xcalls/x_pipe.c
+					xcalls/x_printf.c
+					xcalls/x_pthread_create.c
+					xcalls/x_pthread_mutex_init.c
+					xcalls/x_pthread_mutex_lock.c
+					xcalls/x_pthread_mutex_unlock.c
+					xcalls/x_read.c
+					xcalls/x_read_pipe.c
+					xcalls/x_recvmsg.c
+					xcalls/x_rename.c
+					xcalls/x_sendmsg.c
+					xcalls/x_socket.c
+					xcalls/x_unlink.c
+					xcalls/x_write.c
+					xcalls/x_write_pipe.c""")
+
+LIBC_SRC = Split("""libc/net.c
+					libc/stdlib.c
+					libc/string.c
+					libc/wordcopy.c""")
+
+C_SRC = TXC_SRC
+
+if buildEnv['tm_system'] == 'itm':
+	C_SRC.append(LIBC_SRC)  
+
+if buildEnv['linkage'] == 'dynamic':
+	built_library = buildEnv.SharedLibrary('txc', C_SRC)
+elif buildEnv['linkage'] == 'static':
+	built_library = buildEnv.StaticLibrary('txc', C_SRC)
+
+buildEnv.Install(buildEnv['prefix'], built_library)
+buildEnv.Alias('install', [buildEnv['prefix']])
+

@@ -1,0 +1,9 @@
+xCalls is an API that provides transactional semantics for system calls.
+
+Please see the COPYING and COPYING.LESSER files for licensing 
+information, and INSTALL for compilation instructions.
+	
+More information, including papers, a tutorial and API documentation
+are available at:
+	
+http://www.cs.wisc.edu/~hvolos/projects/xcalls

@@ -1,0 +1,16 @@
+Prerequisites (Linux):
+
+	- Intel C/C++ STM Compiler, Prototype Edition 3.0
+	- SCons: A software construction tool
+
+Build procedure:
+
+	- Edit file $XCALLS/SConstruct set the environment variable CC to point 
+	  to the Intel C Compiler (icc):
+
+	    env['CC'] = '/path/to/intel/c/compiler/icc'
+
+	- Build xCalls:
+
+	    % cd $XCALLS
+	    % scons

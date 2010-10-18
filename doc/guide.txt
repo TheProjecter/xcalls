@@ -1,0 +1,5 @@
+Philosophy behind xCalls
+ - Programmer knows how atomicity and isolation is provided
+ - Programmer knows the type of I/O (pipe, socket, file)
+     + implication for redirection: (stderr, stdout, stdin)
+	 + implication for printf: x_printf assumes pipe I/O

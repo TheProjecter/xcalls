@@ -1,0 +1,18 @@
+Import('env')
+
+ubenchEnv = env.Clone()
+
+ubenchEnv.Append(CCFLAGS = 	' -Wall -Wmissing-prototypes -Wcast-qual -Wwrite-strings -Wformat -Wpointer-arith')
+
+ubenchEnv['CPPPATH'] = ['#test', '#src/inc']
+ubenchEnv['LIBS'] = 'txc'
+ubenchEnv['CFLAGS'] = '-Qtm_enabled'
+ubenchEnv['LINKFLAGS'] = '-Qtm_enabled'
+ubenchEnv['LIBPATH'] = ubenchEnv['MY_BUILD_DIR']
+
+
+BENCH = Split("""
+					iotest""")
+
+for c in BENCH:
+	ubenchEnv.Program(c, c+'.c')

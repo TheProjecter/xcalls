@@ -1,0 +1,5 @@
+OPTIMIZATIONS
+=============
+1. Instead of eagerly destroying a KOA object, keep it in the cache and destroy
+   it lazely, that is when there are no live references to it and you are out 
+   of KOA objects (similar to GC).

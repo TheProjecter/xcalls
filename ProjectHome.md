@@ -1,0 +1,3 @@
+Memory transactions, similar to database transactions, allow a programmer to focus on the logic of their program and let the system ensures that transactions are atomic and isolated. Thus, programs using transactions do not suffer from deadlock. However, when a transaction performs I/O or accesses kernel resources, the atomicity and isolation guarantees from the TM system do not apply to the kernel.
+
+The xCall interface is a new API that provides transactional semantics for system calls. With a combination of deferral and compensation, xCalls enable transactional memory programs to use common OS functionality within transactions.
